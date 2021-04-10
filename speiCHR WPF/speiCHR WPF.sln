@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31129.286
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "speiCHR", "speiCHR WPF\speiCHR.csproj", "{CEED6CD9-7710-483F-A614-C2434D81457A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CEED6CD9-7710-483F-A614-C2434D81457A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEED6CD9-7710-483F-A614-C2434D81457A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEED6CD9-7710-483F-A614-C2434D81457A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEED6CD9-7710-483F-A614-C2434D81457A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A5F786A9-D53D-4865-A59C-773529C520EB}
+	EndGlobalSection
+EndGlobal
