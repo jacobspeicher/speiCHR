@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31129.286
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "speiCHR", "speiCHR WPF\speiCHR.csproj", "{CEED6CD9-7710-483F-A614-C2434D81457A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "speiCHR", "speiCHR\speiCHR.csproj", "{CEED6CD9-7710-483F-A614-C2434D81457A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
