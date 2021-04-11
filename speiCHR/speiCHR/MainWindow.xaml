@@ -6,15 +6,17 @@
         xmlns:local="clr-namespace:speiCHR"
         mc:Ignorable="d"
         Title="speiCHR" Height="450" Width="800">
+    <Window.CommandBindings>
+        <CommandBinding Command="ApplicationCommands.Open" Executed="OpenCmdExecuted" CanExecute="OpenCmdCanExecute" />
+    </Window.CommandBindings>
     <Grid>
-        <Button x:Name="OpenFileButton" Content="Open" HorizontalAlignment="Left" Margin="62,197,0,0" VerticalAlignment="Top" Click="OpenFileButton_Click"/>
         <StatusBar x:Name="FileStatus" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="25" Width="800" Margin="0,0,0,0">
             <TextBlock Text="Editing: " TextWrapping="Wrap"/>
             <TextBlock x:Name="TB_FileName" Text="&lt;no file&gt;" TextWrapping="Wrap"/>
         </StatusBar>
         <Menu Height="25" VerticalAlignment="Top">
             <MenuItem Header="_File">
-                <MenuItem Header="_Open" Command="{Binding OpenFile}"/>
+                <MenuItem Header="_Open" Command="ApplicationCommands.Open"/>
                 <MenuItem Header="_Save" Command="Save"/>
             </MenuItem>
         </Menu>

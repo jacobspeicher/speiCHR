@@ -27,9 +27,16 @@ namespace speiCHR
         {
             InitializeComponent();
             fp = new FileProcessor();
+            CommandBinding OpenCmdBinding = new CommandBinding(
+                ApplicationCommands.Open,
+                OpenCmdExecuted,
+                OpenCmdCanExecute
+            );
+
+            this.CommandBindings.Add(OpenCmdBinding);
         }
 
-        private void OpenFileButton_Click(object sender, RoutedEventArgs e)
+        void OpenCmdExecuted(object target, ExecutedRoutedEventArgs e)
         {
             Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
             dlg.DefaultExt = ".chr";
@@ -39,13 +46,18 @@ namespace speiCHR
             Nullable<bool> result = dlg.ShowDialog();
 
             // Process open file dialog box results
-            if(result == true)
+            if (result == true)
             {
                 // Open document
                 string filename = dlg.FileName;
                 string output = fp.ReadFiles(filename);
                 MessageBox.Show(output);
             }
+        }
+
+        void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
+        {
+            e.CanExecute = true;
         }
     }
 }
