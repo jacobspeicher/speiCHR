@@ -11,15 +11,13 @@
     </Window.CommandBindings>
     <Grid>
         <StatusBar x:Name="FileStatus" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="25" Width="800" Margin="0,0,0,0">
-            <TextBlock Text="Editing: " TextWrapping="Wrap"/>
-            <TextBlock x:Name="TB_FileName" Text="&lt;no file&gt;" TextWrapping="Wrap"/>
+            <TextBlock x:Name="tbl_FileName" TextWrapping="Wrap" />
         </StatusBar>
-        <Menu Height="25" VerticalAlignment="Top">
+        <Menu VerticalAlignment="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open" Command="ApplicationCommands.Open"/>
                 <MenuItem Header="_Save" Command="Save"/>
             </MenuItem>
         </Menu>
-
     </Grid>
 </Window>

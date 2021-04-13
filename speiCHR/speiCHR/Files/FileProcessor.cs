@@ -2,22 +2,24 @@
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using System.Runtime.CompilerServices;
+using System.ComponentModel;
 
 namespace speiCHR.Files
 {
     class FileProcessor
     {
-        BinaryReader reader;
-        public FileProcessor()
+        private BinaryReader reader;
+        private CHRFile chrFile;
+
+        public FileProcessor(CHRFile f)
         {
+            chrFile = f;
         }
 
-        static FileProcessor()
-        {
-
-        }
         public string ReadFiles(string file)
         {
+            chrFile.Name = file.Substring(file.LastIndexOf("\\") + 1);
             reader = new BinaryReader(File.Open(file, FileMode.Open));
 
             byte[] bits = reader.ReadBytes(16);

@@ -22,16 +22,25 @@ namespace speiCHR
     public partial class MainWindow : Window
     {
         private FileProcessor fp;
+        private CHRFile chrFile;
 
         public MainWindow()
         {
             InitializeComponent();
-            fp = new FileProcessor();
+            chrFile = new CHRFile();
+            fp = new FileProcessor(chrFile);
             CommandBinding OpenCmdBinding = new CommandBinding(
                 ApplicationCommands.Open,
                 OpenCmdExecuted,
                 OpenCmdCanExecute
             );
+
+            Binding FileNameBinding = new Binding("Name")
+            {
+                Source = chrFile,
+                Mode = BindingMode.OneWay
+            };
+            tbl_FileName.SetBinding(TextBlock.TextProperty, FileNameBinding);
 
             this.CommandBindings.Add(OpenCmdBinding);
         }
