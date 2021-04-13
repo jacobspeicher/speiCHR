@@ -39,6 +39,7 @@ namespace speiCHR.Files
                 output += row + "\n";
             }
 
+            reader.Close();
             return output;
         }
     }
