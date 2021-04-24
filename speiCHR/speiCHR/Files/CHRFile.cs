@@ -9,6 +9,7 @@ namespace speiCHR.Files
     class CHRFile : INotifyPropertyChanged
     {
         private string _name;
+        private int[,] _pixels;
         public event PropertyChangedEventHandler PropertyChanged;
         
         public CHRFile()
@@ -27,6 +28,16 @@ namespace speiCHR.Files
             set
             {
                 _name = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int[,] Pixels
+        {
+            get { return _pixels; }
+            set
+            {
+                _pixels = value;
                 OnPropertyChanged();
             }
         }

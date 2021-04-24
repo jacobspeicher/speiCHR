@@ -25,6 +25,7 @@ namespace speiCHR.Files
             byte[] bits = reader.ReadBytes(16);
 
             string output = "";
+            int[,] pixels = new int[8, 8];
             for(int i = 0; i < 8; ++i)
             {
                 string row = "";
@@ -34,10 +35,13 @@ namespace speiCHR.Files
                     int hi_bit = bits[i + 8] & 1;
                     bits[i] = (byte)(bits[i] >> 1);
                     bits[i + 8] = (byte)(bits[i + 8] >> 1);
-                    row = lo_bit.ToString() + hi_bit.ToString() + " " + row;
+
+                    pixels[i, j] = hi_bit * 2 + lo_bit;
+                    row =  pixels[i, j].ToString() + " " + row;
                 }
                 output += row + "\n";
             }
+            chrFile.Pixels = pixels;
 
             reader.Close();
             return output;

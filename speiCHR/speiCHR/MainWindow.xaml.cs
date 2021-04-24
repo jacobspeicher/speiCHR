@@ -61,7 +61,33 @@ namespace speiCHR
                 string filename = dlg.FileName;
                 string output = fp.ReadFiles(filename);
                 MessageBox.Show(output);
+                DrawImage();
             }
+        }
+
+        void DrawImage()
+        {
+            List<Color> colors = new List<Color>();
+            colors.Add(Colors.Black);
+            colors.Add(Colors.Red);
+            colors.Add(Colors.Green);
+            colors.Add(Colors.Blue);
+            BitmapPalette spritePalette = new BitmapPalette(colors);
+
+            WriteableBitmap sprites = new WriteableBitmap(8, 8, 96, 96, PixelFormats.Indexed2, spritePalette);
+
+            uint[] pixels = new uint[8 * 2];
+
+            for (int i = 0; i < 8; ++i)
+            {
+                for (int j = 0; j < 2; ++j)
+                {
+                    pixels[8 * j + i] = 1;
+                }
+            }
+
+            sprites.WritePixels(new Int32Rect(0, 0, 8, 8), pixels, 2, 16);
+            SpriteImage.Source = sprites;
         }
 
         void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
