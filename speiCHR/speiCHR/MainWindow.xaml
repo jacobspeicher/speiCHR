@@ -19,6 +19,6 @@
                 <MenuItem Header="_Save" Command="Save"/>
             </MenuItem>
         </Menu>
-        <Image x:Name="SpriteImage" HorizontalAlignment="Left" Height="256" Margin="234,38,0,0" VerticalAlignment="Top" Width="256"/>
+        <Rectangle HorizontalAlignment="Center" Height="25" Margin="0,0,0,0" Stroke="Gray" Fill="Black" VerticalAlignment="Center" Width="25" MouseLeftButtonDown="RectClick"/>
     </Grid>
 </Window>

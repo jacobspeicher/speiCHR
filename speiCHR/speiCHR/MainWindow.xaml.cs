@@ -23,12 +23,14 @@ namespace speiCHR
     {
         private FileProcessor fp;
         private CHRFile chrFile;
+        private Palette[] palettes = new Palette[4];
 
         public MainWindow()
         {
             InitializeComponent();
             chrFile = new CHRFile();
             fp = new FileProcessor(chrFile);
+            palettes[0] = new Palette();
             CommandBinding OpenCmdBinding = new CommandBinding(
                 ApplicationCommands.Open,
                 OpenCmdExecuted,
@@ -72,27 +74,24 @@ namespace speiCHR
             colors.Add(Colors.Red);
             colors.Add(Colors.Green);
             colors.Add(Colors.Blue);
-            BitmapPalette spritePalette = new BitmapPalette(colors);
-
-            WriteableBitmap sprites = new WriteableBitmap(8, 8, 96, 96, PixelFormats.Indexed2, spritePalette);
-
-            uint[] pixels = new uint[8 * 2];
-
-            for (int i = 0; i < 8; ++i)
-            {
-                for (int j = 0; j < 2; ++j)
-                {
-                    pixels[8 * j + i] = 1;
-                }
-            }
-
-            sprites.WritePixels(new Int32Rect(0, 0, 8, 8), pixels, 2, 16);
-            SpriteImage.Source = sprites;
         }
 
         void OpenCmdCanExecute(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = true;
+        }
+
+        void ButtonClick(object sender, RoutedEventArgs e)
+        {
+            Button btn = (Button)sender;
+            btn.Background = Brushes.Pink;
+        }
+
+        void RectClick(object sender, RoutedEventArgs e)
+        {
+            Rectangle rect = (Rectangle)sender;
+
+            rect.Fill = palettes[0].Colors[1];
         }
     }
 }
