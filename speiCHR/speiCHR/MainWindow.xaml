@@ -19,7 +19,7 @@
                 <MenuItem Header="_Save" Command="Save"/>
             </MenuItem>
         </Menu>
-        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" ShowGridLines="True" x:Name="SpriteGrid" />
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="SpriteGrid" />
         <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 100, 50, 0" x:Name="PaletteGrid" />
     </Grid>
 </Window>

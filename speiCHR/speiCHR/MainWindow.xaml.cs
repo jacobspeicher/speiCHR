@@ -59,29 +59,33 @@ namespace speiCHR
 
         private void spriteGridSetup()
         {
-            SpriteGrid.Height = 200;
-            SpriteGrid.Width = 200;
+            SpriteGrid.Height = 1024;
+            SpriteGrid.Width = 1024;
 
-            for (int i = 0; i < 8; ++i)
+            Brush fill = palettes[0].Colors[0];
+            Brush stroke = palettes[0].Colors[4];
+
+            for (int i = 0; i < 128; ++i)
             {
                 ColumnDefinition colDef = new ColumnDefinition();
                 RowDefinition rowDef = new RowDefinition();
 
-                colDef.Width = new GridLength(25);
-                rowDef.Height = new GridLength(25);
+                colDef.Width = new GridLength(8);
+                rowDef.Height = new GridLength(8);
 
                 SpriteGrid.ColumnDefinitions.Add(colDef);
                 SpriteGrid.RowDefinitions.Add(rowDef);
             }
 
-            for (int i = 0; i < 8; ++i)
+            for (int i = 0; i < 64; ++i)
             {
-                for (int j = 0; j < 8; ++j)
+                for (int j = 0; j < 64; ++j)
                 {
                     Rectangle px = new Rectangle();
-                    px.Fill = Brushes.Black;
-                    px.Height = 25;
-                    px.Width = 25;
+                    px.Fill = fill;
+                    px.Stroke = stroke;
+                    px.Height = 8;
+                    px.Width = 8;
                     px.MouseLeftButtonDown += new MouseButtonEventHandler(FillPixel);
                     Grid.SetRow(px, i);
                     Grid.SetColumn(px, j);
@@ -136,11 +140,11 @@ namespace speiCHR
                 string filename = dlg.FileName;
                 string output = fp.ReadFiles(filename);
                 MessageBox.Show(output);
-                DrawSprite();
+                DrawTables();
             }
         }
 
-        private void DrawSprite()
+        private void DrawTables()
         {
             for(int i = 0; i < 8; ++i)
             {
