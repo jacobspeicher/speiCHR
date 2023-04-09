@@ -5,6 +5,7 @@
 #include "imgui/imgui.h"
 #include "imgui/imgui_impl_glfw.h"
 #include "imgui/imgui_impl_opengl3.h"
+#include "imgui/imfilebrowser.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -44,6 +45,8 @@ GLFWwindow* Init() {
 }
 
 void RenderLoop(GLFWwindow* window) {
+	ImGui::FileBrowser fileDialog;
+
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -54,6 +57,28 @@ void RenderLoop(GLFWwindow* window) {
 		ImGui::NewFrame();
 
 		ImGui::ShowDemoWindow();
+		if (ImGui::BeginMainMenuBar()) {
+			if (ImGui::BeginMenu("File")) {
+				if (ImGui::MenuItem("Import Image")) {
+					fileDialog.Open();
+				}
+				if (ImGui::MenuItem("Export CHR")) {
+
+				}
+				ImGui::EndMenu();
+			}
+			if (ImGui::Button("Convert")) {
+
+			}
+			ImGui::EndMainMenuBar();
+		}
+
+		fileDialog.Display();
+
+		if (fileDialog.HasSelected()) {
+			spdlog::info(fileDialog.GetSelected().string());
+			fileDialog.ClearSelected();
+		}
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
