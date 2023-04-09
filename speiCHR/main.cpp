@@ -7,8 +7,25 @@
 #include "imgui/imgui_impl_opengl3.h"
 #include "imgui/imfilebrowser.h"
 
+#include "include/stb_image.h"
+
+#include "texture_utility.h"
+
+#include <string>
+#include <algorithm>
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods);
+
+GLFWwindow* Init();
+void UI();
+void RenderLoop(GLFWwindow* window);
+
+int main(int argc, char* argv) {
+	GLFWwindow* window = Init();
+
+	RenderLoop(window);
+}
 
 GLFWwindow* Init() {
 	glfwInit();
@@ -16,7 +33,7 @@ GLFWwindow* Init() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "speiCHR", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1920, 1080, "speiCHR", NULL, NULL);
 	if (window == NULL) {
 		spdlog::error("window creation failed");
 		glfwTerminate();
@@ -35,7 +52,7 @@ GLFWwindow* Init() {
 
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
-	
+
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init("#version 330");
 
@@ -45,8 +62,6 @@ GLFWwindow* Init() {
 }
 
 void RenderLoop(GLFWwindow* window) {
-	ImGui::FileBrowser fileDialog;
-
 	while (!glfwWindowShouldClose(window)) {
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -56,29 +71,7 @@ void RenderLoop(GLFWwindow* window) {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		ImGui::ShowDemoWindow();
-		if (ImGui::BeginMainMenuBar()) {
-			if (ImGui::BeginMenu("File")) {
-				if (ImGui::MenuItem("Import Image")) {
-					fileDialog.Open();
-				}
-				if (ImGui::MenuItem("Export CHR")) {
-
-				}
-				ImGui::EndMenu();
-			}
-			if (ImGui::Button("Convert")) {
-
-			}
-			ImGui::EndMainMenuBar();
-		}
-
-		fileDialog.Display();
-
-		if (fileDialog.HasSelected()) {
-			spdlog::info(fileDialog.GetSelected().string());
-			fileDialog.ClearSelected();
-		}
+		UI();
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -88,10 +81,132 @@ void RenderLoop(GLFWwindow* window) {
 	}
 }
 
-int main(int argc, char* argv) {
-	GLFWwindow* window = Init();
+void UI() {
+	static ImGui::FileBrowser fileDialog;
+	static std::string image_path = "";
 
-	RenderLoop(window);
+	static int width = 0;
+	static int height = 0;
+
+	static GLuint texture = 0;
+	static GLuint texture_r = 0;
+	static GLuint texture_g = 0;
+	static GLuint texture_b = 0;
+	static GLuint texture_palatte = 0;
+	static unsigned char* data;
+	static unsigned char* data_r;
+	static unsigned char* data_g;
+	static unsigned char* data_b;
+	static unsigned char* data_palatte;
+	
+	Color one = { 0, 0, 0 };
+	Color two = { 255, 0, 0 };
+	Color three = { 0, 255, 0 };
+	Color four = { 0, 0, 255 };
+	static Color palatte[4] = { one, two, three, four };
+
+	ImGui::ShowDemoWindow();
+	if (ImGui::BeginMainMenuBar()) {
+		if (ImGui::BeginMenu("File")) {
+			if (ImGui::MenuItem("Import Image")) {
+				fileDialog.Open();
+			}
+			if (ImGui::MenuItem("Export CHR")) {
+
+			}
+			ImGui::EndMenu();
+		}
+
+		if (image_path == "") { ImGui::BeginDisabled(); }
+		if (ImGui::Button("Convert")) {
+
+		}
+		if (image_path == "") { ImGui::EndDisabled(); }
+
+		ImGui::EndMainMenuBar();
+	}
+
+	fileDialog.Display();
+
+	if (fileDialog.HasSelected()) {
+		spdlog::info(fileDialog.GetSelected().string());
+		image_path = fileDialog.GetSelected().string();
+
+		bool ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data, &width, &height);
+		IM_ASSERT(ret);
+		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_r, &width, &height);
+		IM_ASSERT(ret);
+		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_g, &width, &height);
+		IM_ASSERT(ret);
+		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_b, &width, &height);
+		IM_ASSERT(ret);
+		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_palatte, &width, &height);
+		IM_ASSERT(ret);
+
+		TextureUtility::LoadTextureFromData(data, &texture, width, height);
+		TextureUtility::ProcessRGB(data_r, width, height, 1, 0, 0);
+		TextureUtility::LoadTextureFromData(data_r, &texture_r, width, height);
+		TextureUtility::ProcessRGB(data_g, width, height, 0, 1, 0);
+		TextureUtility::LoadTextureFromData(data_g, &texture_g, width, height);
+		TextureUtility::ProcessRGB(data_b, width, height, 0, 0, 1);
+		TextureUtility::LoadTextureFromData(data_b, &texture_b, width, height);
+
+		TextureUtility::ProcessToPalatte(data_palatte, width, height, palatte);
+		TextureUtility::LoadTextureFromData(data_palatte, &texture_palatte, width, height);
+
+		fileDialog.ClearSelected();
+	}
+
+	if (image_path != "") {
+		ImGui::Begin("4 Images (original, r, g, b)");
+		ImGui::Text("size = %d x %d", width, height);
+
+		ImGui::BeginGroup();
+		ImGui::Text("pointer = %p", texture);
+		ImGui::Text("data[0] : %d data[1] : %d data[2] : %d data[3] : %d", 
+			data[0], data[1], data[2], data[3]);
+		ImGui::Image((void*)(intptr_t)texture, ImVec2(width, height));
+		ImGui::EndGroup();
+		
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		ImGui::Text("pointer = %p", texture_r);
+		ImGui::Text("data[0] : %d data[1] : %d data[2] : %d data[3] : %d",
+			data_r[0], data_r[1], data_r[2], data_r[3]);
+		ImGui::Image((void*)(intptr_t)texture_r, ImVec2(width, height));
+		ImGui::EndGroup();
+
+		ImGui::BeginGroup();
+		ImGui::Text("pointer = %p", texture_g);
+		ImGui::Text("data[0] : %d data[1] : %d data[2] : %d data[3] : %d",
+			data_g[0], data_g[1], data_g[2], data_g[3]);
+		ImGui::Image((void*)(intptr_t)texture_g, ImVec2(width, height));
+		ImGui::EndGroup();
+
+		ImGui::SameLine();
+
+		ImGui::BeginGroup();
+		ImGui::Text("pointer = %p", texture_b);
+		ImGui::Text("data[0] : %d data[1] : %d data[2] : %d data[3] : %d",
+			data_b[0], data_b[1], data_b[2], data_b[3]);
+		ImGui::Image((void*)(intptr_t)texture_b, ImVec2(width, height));
+		ImGui::EndGroup();
+
+		ImGui::End();
+
+		ImGui::Begin("4 Color Palatte");
+		ImGui::Text("size = %d x %d", width, height);
+
+		ImGui::BeginGroup();
+		ImGui::Text("pointer = %p", texture_palatte);
+		ImGui::Text("data[0] : %d data[1] : %d data[2] : %d data[3] : %d",
+			data_palatte[0], data_palatte[1], data_palatte[2], data_palatte[3]);
+		ImGui::Image((void*)(intptr_t)texture_palatte, ImVec2(width, height));
+		ImGui::EndGroup();
+
+		ImGui::End();
+	}
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) {
