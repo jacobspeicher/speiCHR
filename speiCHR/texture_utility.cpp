@@ -1,8 +1,6 @@
 #include "texture_utility.h"
 #include "include/stb_image.h"
 
-#include <spdlog/spdlog.h>
-
 namespace TextureUtility {
 	bool LoadImageDataFromFile(const char* filename, unsigned char** out_image_data, int* out_width, int* out_height) {
 		int width, height, numChannels;
@@ -45,7 +43,7 @@ namespace TextureUtility {
 		return true;
 	}
 
-	void LoadTextureFromData(unsigned char* data, GLuint* out_texture, int width, int height) {
+	void LoadTextureFromData(unsigned char* data, GLuint* out_texture) {
 		GLuint texture;
 		glGenTextures(1, &texture);
 		glBindTexture(GL_TEXTURE_2D, texture);
@@ -55,13 +53,13 @@ namespace TextureUtility {
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 256, 240, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 
 		*out_texture = texture;
 	}
 
-	void ProcessRGB(unsigned char* data, int width, int height, int r, int g, int b) {
-		int size_of_data = width * height * 4;
+	void ProcessRGB(unsigned char* data, int r, int g, int b) {
+		int size_of_data = 256 * 240 * 4;
 		for (int i = 0; i < size_of_data; i += 4) {
 			data[i] *= r;
 			data[i + 1] *= g;
@@ -69,8 +67,8 @@ namespace TextureUtility {
 		}
 	}
 
-	void ProcessToPalatte(unsigned char* data, int width, int height, Color palatte[]) {
-		int size_of_data = width * height * 4;
+	void ProcessToPalatte(unsigned char* data, Color palatte[]) {
+		int size_of_data = 256 * 240 * 4;
 		for (int i = 0; i < size_of_data; i += 4) {
 			if (data[i + 3] < 255) {
 				data[i] = 0;
@@ -79,10 +77,9 @@ namespace TextureUtility {
 				continue;
 			}
 
-			float average = (data[i] + data[i + 1] + data[i + 2]) / 3;
-			//spdlog::info(average);
-
 			Color new_color = { 0, 0, 0 };
+			float average = (data[i] + data[i + 1] + data[i + 2]) / 3;
+
 			if (average >= 0 && average < 64) {
 				new_color = palatte[0];
 			}
