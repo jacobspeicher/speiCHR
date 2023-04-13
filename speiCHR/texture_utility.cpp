@@ -1,6 +1,9 @@
 #include "texture_utility.h"
 #include "include/stb_image.h"
 
+#include <map>
+#include <spdlog/spdlog.h>
+
 namespace TextureUtility {
 	bool LoadImageDataFromFile(const char* filename, unsigned char** out_image_data, int* out_width, int* out_height) {
 		int width, height, numChannels;
@@ -97,5 +100,44 @@ namespace TextureUtility {
 			data[i + 1] = new_color.g;
 			data[i + 2] = new_color.b;
 		}
+	}
+
+	Color* ProcessGeneratePalatte(unsigned char* data) {
+		int size_of_data = 256 * 240 * 4;
+		std::map<const Color, int> color_frequency;
+
+		for (int i = 0; i < size_of_data; i += 4) {
+			const Color pixel_color(data[i], data[i + 1], data[i + 2]);
+
+			if (color_frequency.count(pixel_color) == 0) {
+				color_frequency[pixel_color] = 1;
+			}
+			else {
+				color_frequency[pixel_color]++;
+			}
+		}
+
+		std::vector<Color> colors;
+		std::vector<std::pair<int, int>> sorted_color_frequency;
+		for (auto const &kv : color_frequency) {
+			colors.push_back(kv.first);
+			sorted_color_frequency.push_back(std::make_pair(colors.size() - 1, kv.second));
+		}
+		std::sort(sorted_color_frequency.begin(), sorted_color_frequency.end(),
+			[](const std::pair<int, int>& p1, const std::pair<int, int>& p2) {
+				return p1.second < p2.second;
+			});
+		Color output_colors[4];
+		int sorted_size = sorted_color_frequency.size() - 500;
+		for (int i = 0; i < 4; ++i) {
+			int idx = sorted_size - i;
+			spdlog::info(std::to_string(i) + " : "
+				+ colors[sorted_color_frequency[idx].first].print() + " : "
+				+ std::to_string(sorted_color_frequency[idx].second));
+
+			output_colors[i] = colors[sorted_color_frequency[idx].first];
+		}
+
+		return output_colors;
 	}
 }

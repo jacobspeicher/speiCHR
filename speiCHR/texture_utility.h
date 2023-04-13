@@ -1,10 +1,34 @@
 #pragma once
 #include <glad/glad.h>
 
+#include <string>
+
 struct Color {
 	int r;
 	int g;
 	int b;
+
+	Color() : r(0), g(0), b(0) {}
+	Color(int r, int g, int b) : r(r), g(g), b(b) {}
+	Color(const Color& other) : r(other.r), g(other.g), b(other.b) {}
+
+	std::string print() const {
+		return std::to_string(r) + ", " + std::to_string(g) + ", " + std::to_string(b);
+	}
+
+	bool operator==(const Color& other) const {
+		return r == other.r &&
+			g == other.g &&
+			b == other.b;
+	}
+
+	bool operator<(const Color& other) const {
+		return (r + g + b) < (other.r + other.g + other.b);
+	}
+
+	bool operator>(const Color& other) const {
+		return (r + g + b) > (other.r + other.g + other.b);
+	}
 };
 
 namespace TextureUtility {
@@ -14,5 +38,6 @@ namespace TextureUtility {
 	void ProcessRGB(unsigned char* data, int r, int g, int b);
 
 	void ProcessToPalatte(unsigned char* data, Color palatte[]);
+	Color* ProcessGeneratePalatte(unsigned char* data);
 }
 

@@ -110,7 +110,7 @@ void UI() {
 	Color two = { 255, 0, 0 };
 	Color three = { 0, 255, 0 };
 	Color four = { 0, 0, 255 };
-	static Color palatte[4] = { one, two, three, four };
+	//static Color palatte[4] = { one, two, three, four };
 
 	ImGui::ShowDemoWindow();
 	if (ImGui::BeginMainMenuBar()) {
@@ -146,17 +146,6 @@ void UI() {
 		ret = stbir_resize_uint8(initial_data, width, height, 0, data_b, NES_WIDTH, NES_HEIGHT, 0, 4);
 		ret = stbir_resize_uint8(initial_data, width, height, 0, data_palatte, NES_WIDTH, NES_HEIGHT, 0, 4);
 
-		/*ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data, &width, &height);
-		IM_ASSERT(ret);
-		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_r, &width, &height);
-		IM_ASSERT(ret);
-		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_g, &width, &height);
-		IM_ASSERT(ret);
-		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_b, &width, &height);
-		IM_ASSERT(ret);
-		ret = TextureUtility::LoadImageDataFromFile(image_path.c_str(), &data_palatte, &width, &height);
-		IM_ASSERT(ret);*/
-
 		TextureUtility::LoadTextureFromData(data, &texture);
 		TextureUtility::ProcessRGB(data_r, 1, 0, 0);
 		TextureUtility::LoadTextureFromData(data_r, &texture_r);
@@ -165,6 +154,7 @@ void UI() {
 		TextureUtility::ProcessRGB(data_b, 0, 0, 1);
 		TextureUtility::LoadTextureFromData(data_b, &texture_b);
 
+		Color* palatte = TextureUtility::ProcessGeneratePalatte(data);
 		TextureUtility::ProcessToPalatte(data_palatte, palatte);
 		TextureUtility::LoadTextureFromData(data_palatte, &texture_palatte);
 
