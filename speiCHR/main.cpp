@@ -13,6 +13,7 @@
 #include "include/stb_image_resize.h"
 
 #include "texture_utility.h"
+#include "color_utility.h"
 
 #include <string>
 #include <algorithm>
@@ -30,6 +31,7 @@ void RenderLoop(GLFWwindow* window);
 int main(int argc, char* argv) {
 	GLFWwindow* window = Init();
 
+	ColorUtility::ProcessNESColors();
 	RenderLoop(window);
 }
 
@@ -110,7 +112,8 @@ void UI() {
 	Color two = { 255, 0, 0 };
 	Color three = { 0, 255, 0 };
 	Color four = { 0, 0, 255 };
-	//static Color palatte[4] = { one, two, three, four };
+	static Color palatte[4] = { one, two, three, four };
+	static unsigned char* nes_palette;
 
 	ImGui::ShowDemoWindow();
 	if (ImGui::BeginMainMenuBar()) {
@@ -146,16 +149,17 @@ void UI() {
 		ret = stbir_resize_uint8(initial_data, width, height, 0, data_b, NES_WIDTH, NES_HEIGHT, 0, 4);
 		ret = stbir_resize_uint8(initial_data, width, height, 0, data_palatte, NES_WIDTH, NES_HEIGHT, 0, 4);
 
+		ColorUtility::ProcessRGB(data_r, 1, 0, 0);
+		ColorUtility::ProcessRGB(data_g, 0, 1, 0);
+		ColorUtility::ProcessRGB(data_b, 0, 0, 1);
+
 		TextureUtility::LoadTextureFromData(data, &texture);
-		TextureUtility::ProcessRGB(data_r, 1, 0, 0);
 		TextureUtility::LoadTextureFromData(data_r, &texture_r);
-		TextureUtility::ProcessRGB(data_g, 0, 1, 0);
 		TextureUtility::LoadTextureFromData(data_g, &texture_g);
-		TextureUtility::ProcessRGB(data_b, 0, 0, 1);
 		TextureUtility::LoadTextureFromData(data_b, &texture_b);
 
-		Color* palatte = TextureUtility::ProcessGeneratePalatte(data);
-		TextureUtility::ProcessToPalatte(data_palatte, palatte);
+		//Color* palatte = TextureUtility::ProcessGeneratePalatte(data);
+		ColorUtility::ProcessToPalette(data_palatte, palatte);
 		TextureUtility::LoadTextureFromData(data_palatte, &texture_palatte);
 
 		fileDialog.ClearSelected();

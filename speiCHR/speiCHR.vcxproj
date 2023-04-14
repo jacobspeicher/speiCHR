@@ -147,6 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="color.h" />
+    <ClInclude Include="color_utility.h" />
     <ClInclude Include="imgui\imconfig.h" />
     <ClInclude Include="imgui\imfilebrowser.h" />
     <ClInclude Include="imgui\imgui.h" />
@@ -162,6 +164,7 @@
     <ClInclude Include="texture_utility.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="color_utility.cpp" />
     <ClCompile Include="imgui\imgui.cpp" />
     <ClCompile Include="imgui\imgui_demo.cpp" />
     <ClCompile Include="imgui\imgui_draw.cpp" />
