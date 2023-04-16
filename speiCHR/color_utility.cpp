@@ -5,8 +5,11 @@
 #include <map>
 #include <fstream>
 
+#define SIZE_OF_DATA 245760 // 256 x 240 x 4 (W x H x image_channels)
+
 namespace ColorUtility {
 	static std::vector<Color> nes_colors;
+	static std::map<IMPCHANNEL, std::map<IMPCHANNEL, std::vector<int>>> organized_nes_colors;
 
 	void ProcessRGB(unsigned char* data, int r, int g, int b) {
 		int size_of_data = 256 * 240 * 4;
@@ -47,7 +50,7 @@ namespace ColorUtility {
 		for (int i = 0; i < 4; ++i) {
 			size_t idx = sorted_size - i;
 			spdlog::info(std::to_string(i) + " : "
-				+ colors[sorted_color_frequency[idx].first].print() + " : "
+				+ colors[sorted_color_frequency[idx].first].Print() + " : "
 				+ std::to_string(sorted_color_frequency[idx].second));
 
 			output_colors[i] = colors[sorted_color_frequency[idx].first];
@@ -82,9 +85,9 @@ namespace ColorUtility {
 				new_color = palatte[3];
 			}
 
-			data[i] = new_color.get_r();
-			data[i + 1] = new_color.get_g();
-			data[i + 2] = new_color.get_b();
+			data[i] = new_color.GetR();
+			data[i + 1] = new_color.GetG();
+			data[i + 2] = new_color.GetB();
 		}
 	}
 
@@ -92,31 +95,114 @@ namespace ColorUtility {
 		std::ifstream color_file("nes_colors.csv");
 		std::string line;
 
+		int i = 0;
 		while (std::getline(color_file, line, '\n')) {
 
 			std::stringstream ss;
 			int r;
 			ss << std::hex << line.substr(0, 4);
-			spdlog::warn(ss.str());
+			//spdlog::warn(ss.str());
 			ss >> r;
 			std::stringstream().swap(ss);
 			int g;
 			ss << std::hex << line.substr(5, 4);
-			spdlog::warn(ss.str());
+			//spdlog::warn(ss.str());
 			ss >> g;
 			std::stringstream().swap(ss);
 			int b;
 			ss << std::hex << line.substr(10, 4);
-			spdlog::warn(ss.str());
+			//spdlog::warn(ss.str());
 			ss >> b;
 			std::stringstream().swap(ss);
 
 			Color color(r, g, b);
 			nes_colors.push_back(color);
+			organized_nes_colors[color.GetPrimary()][color.GetSecondary()].push_back(i);
+			++i;
 		}
 
-		for (auto color : nes_colors) {
-			spdlog::info(color.print());
+		for (auto const& kv : organized_nes_colors) {
+			switch (kv.first) {
+			case IMPCHANNEL::RED:
+				spdlog::info("RED:");
+				break;
+			case IMPCHANNEL::GREEN:
+				spdlog::info("GREEN:");
+				break;
+			case IMPCHANNEL::BLUE:
+				spdlog::info("BLUE:");
+				break;
+			default:
+				spdlog::info("EQUAL:");
+				break;
+			}
+
+			for (auto const& second_kv : kv.second) {
+				switch (second_kv.first) {
+				case IMPCHANNEL::RED:
+					spdlog::info("\tRED:");
+					break;
+				case IMPCHANNEL::GREEN:
+					spdlog::info("\tGREEN:");
+					break;
+				case IMPCHANNEL::BLUE:
+					spdlog::info("\tBLUE:");
+					break;
+				default:
+					spdlog::info("\tEQUAL:");
+					break;
+				}
+
+				for (auto idx : second_kv.second) {
+					spdlog::info("\t\t" + nes_colors[idx].Print());
+				}
+			}
 		}
+	}
+
+	void ConvertToNESColors(unsigned char* data) {
+		std::map<Color, int> converted_colors;
+
+		for (int i = 0; i < SIZE_OF_DATA; i += 4) {
+			Color data_color(data[i], data[i + 1], data[i + 2]);
+
+			int color_idx = -1;
+			try {
+				color_idx = converted_colors.at(data_color);
+			}
+			catch(...) {
+				color_idx = ColorUtility::GetClosestNESColor(data_color);
+				converted_colors[data_color] = color_idx;
+			}
+
+			Color nes_color = nes_colors[color_idx];
+			data[i] = nes_color.GetR();
+			data[i + 1] = nes_color.GetG();
+			data[i + 2] = nes_color.GetB();
+		}
+	}
+
+	int GetClosestNESColor(Color data_color) {
+		int color_idx = -1;
+		int min_distance = 256;
+
+		std::map<IMPCHANNEL, std::vector<int>> secondary = organized_nes_colors[data_color.GetPrimary()];
+		std::vector<int> potential_colors;
+		try {
+			potential_colors = secondary.at(data_color.GetSecondary());
+		}
+		catch (...) {
+			potential_colors = secondary[IMPCHANNEL::RED];
+		}
+
+		for (auto idx : potential_colors) {
+			int distance = data_color.AverageDistance(nes_colors[idx]);
+			if (distance < min_distance) {
+				min_distance = distance;
+				color_idx = idx;
+			}
+		}
+
+		return color_idx;
 	}
 }

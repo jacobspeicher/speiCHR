@@ -159,7 +159,8 @@ void UI() {
 		TextureUtility::LoadTextureFromData(data_b, &texture_b);
 
 		//Color* palatte = TextureUtility::ProcessGeneratePalatte(data);
-		ColorUtility::ProcessToPalette(data_palatte, palatte);
+		//ColorUtility::ProcessToPalette(data_palatte, palatte);
+		ColorUtility::ConvertToNESColors(data_palatte);
 		TextureUtility::LoadTextureFromData(data_palatte, &texture_palatte);
 
 		fileDialog.ClearSelected();
@@ -211,6 +212,24 @@ void UI() {
 		ImGui::Text("data[0] : %d data[1] : %d data[2] : %d data[3] : %d",
 			data_palatte[0], data_palatte[1], data_palatte[2], data_palatte[3]);
 		ImGui::Image((void*)(intptr_t)texture_palatte, ImVec2(NES_WIDTH, NES_HEIGHT));
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		if (ImGui::IsItemHovered() && ImGui::BeginTooltip()) {
+			ImGuiIO& io = ImGui::GetIO();
+
+			float region_sz = 32.0f;
+			float region_x = io.MousePos.x - pos.x - region_sz * 0.5f;
+			float region_y = abs(io.MousePos.y - pos.y - region_sz * 0.5f);
+			float zoom = 4.0f;
+
+			if (region_x < 0.0f) { region_x = 0.0f; }
+			else if (region_x > NES_WIDTH - region_sz) { region_x = NES_WIDTH - region_sz; }
+			if (region_y < 0.0f) { region_y = 0.0f; }
+			else if (region_y > NES_HEIGHT - region_sz) { region_y = NES_HEIGHT - region_sz; }
+			ImVec2 uv0 = ImVec2((region_x) / NES_WIDTH, (region_y) / NES_HEIGHT);
+			ImVec2 uv1 = ImVec2((region_x + region_sz) / NES_WIDTH, (region_y + region_sz) / NES_HEIGHT);
+			ImGui::Image((void*)(intptr_t)texture_palatte, ImVec2(region_sz * zoom, region_sz * zoom), uv0, uv1);
+			ImGui::EndTooltip();
+		}
 		ImGui::EndGroup();
 		
 		ImGui::End();
