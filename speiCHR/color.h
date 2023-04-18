@@ -11,8 +11,9 @@ enum class IMPCHANNEL {
 
 class Color {
 public:
-	Color() : r(0), g(0), b(0), primary(IMPCHANNEL::EQUAL), secondary(IMPCHANNEL::EQUAL) {}
-	Color(const Color& other) : r(other.r), g(other.g), b(other.b), primary(other.primary), secondary(other.secondary) {}
+	Color() : r(255), g(255), b(255), primary(IMPCHANNEL::EQUAL), secondary(IMPCHANNEL::EQUAL) {}
+	Color(const Color& other) : r(other.r), g(other.g), b(other.b), 
+		primary(other.primary), secondary(other.secondary) {}
 	Color(int r, int g, int b) : r(r), g(g), b(b) {
 		if (r > g && r > b) { primary = IMPCHANNEL::RED; }
 		else if (g > r && g > b) { primary = IMPCHANNEL::GREEN; }
@@ -29,12 +30,17 @@ public:
 	int GetG() { return g; }
 	int GetB() { return b; }
 
-	int AverageDistance(const Color& other) {
-		int avg_r = abs(r - other.r);
-		int avg_g = abs(g - other.g);
-		int avg_b = abs(b - other.b);
+	float Distance(const Color& other) {
+		float avg_r = (r + other.r) / 2;
+		float delta_r = (r - other.r);
+		float delta_g = (g - other.g);
+		float delta_b = (b - other.b);
 
-		return (avg_r + avg_g + avg_b) / 3;
+		float dist_r = (2 + (avg_r / 256)) * pow(delta_r, 2);
+		float dist_g = 4 * pow(delta_g, 2);
+		float dist_b = (2 + ((255 - avg_r) / 256)) * pow(delta_b, 2);
+
+		return sqrt(dist_r + dist_g + dist_b);
 	}
 
 	std::string Print() const {

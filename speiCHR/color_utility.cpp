@@ -179,12 +179,14 @@ namespace ColorUtility {
 			data[i] = nes_color.GetR();
 			data[i + 1] = nes_color.GetG();
 			data[i + 2] = nes_color.GetB();
+
+			//spdlog::warn(nes_color.Print() + " : " + data_color.Print());
 		}
 	}
 
 	int GetClosestNESColor(Color data_color) {
 		int color_idx = -1;
-		int min_distance = 256;
+		float min_distance = MAXINT32;
 
 		std::map<IMPCHANNEL, std::vector<int>> secondary = organized_nes_colors[data_color.GetPrimary()];
 		std::vector<int> potential_colors;
@@ -195,11 +197,19 @@ namespace ColorUtility {
 			potential_colors = secondary[IMPCHANNEL::RED];
 		}
 
-		for (auto idx : potential_colors) {
-			int distance = data_color.AverageDistance(nes_colors[idx]);
+		/*for (auto idx : potential_colors) {
+			float distance = data_color.Distance(nes_colors[idx]);
 			if (distance < min_distance) {
 				min_distance = distance;
 				color_idx = idx;
+			}
+		}*/
+
+		for (int i = 0; i < nes_colors.size(); ++i) {
+			float distance = data_color.Distance(nes_colors[i]);
+			if (distance < min_distance) {
+				min_distance = distance;
+				color_idx = i;
 			}
 		}
 
